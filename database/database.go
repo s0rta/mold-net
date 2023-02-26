@@ -18,8 +18,8 @@ import (
 	"lieu/util"
 	"log"
 	"net/url"
-	"strings"
 	"regexp"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -60,6 +60,7 @@ func createTables(db *sql.DB) {
         about TEXT,
         lang TEXT,
         domain TEXT NOT NULL,
+		depth INT,
         FOREIGN KEY(domain) REFERENCES domains(domain)
     );
     `,
@@ -335,14 +336,14 @@ func InsertManyPages(db *sql.DB, pages []types.PageData) {
 	args := make([]interface{}, 0, len(pages))
 
 	for _, b := range pages {
-		// url, title, lang, about, domain
-		values = append(values, "(?, ?, ?, ?, ?)")
+		// url, title, lang, about, domain, depth
+		values = append(values, "(?, ?, ?, ?, ?, ?)")
 		u, err := url.Parse(b.URL)
 		util.Check(err)
-		args = append(args, b.URL, b.Title, b.Lang, b.About, u.Hostname())
+		args = append(args, b.URL, b.Title, b.Lang, b.About, u.Hostname(), b.Depth)
 	}
 
-	stmt := fmt.Sprintf(`INSERT OR IGNORE INTO pages(url, title, lang, about, domain) VALUES %s`, strings.Join(values, ","))
+	stmt := fmt.Sprintf(`INSERT OR IGNORE INTO pages(url, title, lang, about, domain, depth) VALUES %s`, strings.Join(values, ","))
 	_, err := db.Exec(stmt, args...)
 	util.Check(err)
 }

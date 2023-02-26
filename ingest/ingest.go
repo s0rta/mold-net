@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -90,15 +91,17 @@ func Ingest(config types.Config) {
 		line := scanner.Text()
 		firstSpace := strings.Index(line, " ")
 		lastSpace := strings.LastIndex(line, " ")
+		splitString := strings.Split(line, " ")
 
 		if len(line) == 0 || firstSpace == -1 {
 			continue
 		}
 
-		pageurl := strings.TrimSuffix(strings.TrimSpace(line[lastSpace:len(line)]), "/")
+		pageurl := strings.TrimSuffix(strings.TrimSpace(splitString[len(splitString)-2]), "/")
 		if !strings.HasPrefix(pageurl, "http") {
 			continue
 		}
+		fmt.Println(pageurl)
 
 		var page types.PageData
 		if data, exists := pages[pageurl]; exists {
@@ -110,6 +113,12 @@ func Ingest(config types.Config) {
 		token := line[0:firstSpace]
 		rawdata := strings.TrimSpace(line[firstSpace:lastSpace])
 		payload := strings.ToLower(rawdata)
+
+		page.Depth, err = strconv.Atoi(splitString[len(splitString)-1])
+
+		if err != nil {
+			log.Panic(err)
+		}
 
 		var processed []string
 		score := 1

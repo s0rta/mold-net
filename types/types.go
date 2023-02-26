@@ -12,6 +12,7 @@ type PageData struct {
 	About       string
 	Lang        string
 	AboutSource string
+	Depth       int
 }
 
 type Config struct {
@@ -44,3 +45,23 @@ type Config struct {
 		PreviewQueries string `json:"previewQueryList"`
 	} `json:crawler`
 }
+
+
+type Cluster struct {
+	Spores   []string
+	Hyphae   []string
+	Id       string
+	Location string
+	Depth    int
+}
+
+type Hypha struct {
+	Url   string
+	Depth int
+}
+
+type Site struct {
+	Url   string
+	Depth int
+}
+
